@@ -2,12 +2,6 @@
   "name": "spiralv2",
   "version": "1.0.0",
   "description": "Interactive Spiral Galaxy with Big Bang Animation",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  },
   "vercel": {
     "outputDirectory": "public"
   }
