@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Spiral Galaxy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            overflow: hidden;
+            background: #000;
+            font-family: 'Courier New', monospace;
+        }
+        #threejs-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+        
+        /* Glassmorphic Planet Label */
+        #planet-label {
+            position: absolute;
+            display: none;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            color: #00ffff;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+        
+        #planet-label .planet-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        #planet-label .planet-info {
+            font-size: 12px;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+        
+        #planet-label .robot-icon {
+            display: inline-block;
+            margin-right: 8px;
+            animation: robotBounce 1s ease-in-out infinite;
+        }
+        
+        @keyframes robotBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        /* Navigation Container */
+        #nav-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--button-gap, 15px);
+            padding: var(--container-padding, 15px 25px);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--container-radius, 16px);
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 90vw;
+        }
+        
+        #nav-container button {
+            padding: var(--button-padding, 12px 24px);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--button-radius, 10px);
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            font-size: var(--button-font-size, 14px);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: var(--button-letter-spacing, 1px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            white-space: nowrap;
+        }
+        
+        #nav-container button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        #nav-container button:active {
+            transform: scale(0.95);
+        }
+        
+        /* Music button specific styles */
+        #btn-music {
+            background: rgba(0, 255, 255, 0.15);
+            border-color: rgba(0, 255, 255, 0.4);
+        }
+        
+        /* Size button specific styles */
+        #btn-size {
+            background: rgba(255, 165, 0, 0.15);
+            border-color: rgba(255, 165, 0, 0.4);
+            color: #ffa500;
+        }
+        
+        /* Responsive button sizing */
+        @media (max-width: 768px) {
+            #nav-container {
+                bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #nav-container {
+                bottom: 15px;
+                max-width: 95vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="threejs-container"></div>
+    <div id="planet-label">
+        <div class="planet-name">
+            <span class="robot-icon">🤖</span>
+            <span id="label-name"></span>
+        </div>
+        <div class="planet-info" id="label-info"></div>
+    </div>
+    <div id="nav-container">
+        <button id="btn-galaxy">Galaxy</button>
+        <button id="btn-blackhole">Black Hole</button>
+        <button id="btn-camera-view">Camera View</button>
+        <button id="btn-free-cam">Free Cam</button>
+        <button id="btn-music">Music: ON</button>
+        <button id="btn-size">Size+</button>
+    </div>
+    <audio id="background-music" loop>
+        <source src="music/Love Story (Version Orchestrale) (Instrumental) - Indila.mp3" type="audio/mpeg">
+    </audio>
+    <script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+    <script src="galaxy.js"></script>
+</body>
+</html>
