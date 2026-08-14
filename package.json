@@ -1,8 +1,5 @@
 {
   "name": "spiralv2",
   "version": "1.0.0",
-  "description": "Interactive Spiral Galaxy with Big Bang Animation",
-  "vercel": {
-    "outputDirectory": "public"
-  }
+  "description": "Interactive Spiral Galaxy with Big Bang Animation"
 }
