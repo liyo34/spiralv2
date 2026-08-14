@@ -1,3 +1,4 @@
+
 // ============================================
 // THREE.JS 3D GALAXY SIMULATION
 // ============================================
@@ -879,16 +880,11 @@ container.addEventListener('mousemove', (e) => {
     camera.quaternion.copy(quaternion);
 });
 
-// Mobile touch gestures - improved smooth controls
+// Mobile touch gestures - simplified and predictable
 let touchStartX = 0;
 let touchStartY = 0;
 let isTouching = false;
 let lastTouchDistance = null;
-let touchVelocityX = 0;
-let touchVelocityY = 0;
-let lastTouchX = 0;
-let lastTouchY = 0;
-let lastTouchTime = 0;
 
 const getTouchDistance = (touches) => {
     const dx = touches[0].clientX - touches[1].clientX;
@@ -902,11 +898,6 @@ container.addEventListener('touchstart', (e) => {
     if (e.touches.length === 1) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
-        lastTouchX = touchStartX;
-        lastTouchY = touchStartY;
-        lastTouchTime = Date.now();
-        touchVelocityX = 0;
-        touchVelocityY = 0;
     }
 });
 
@@ -918,8 +909,8 @@ container.addEventListener('touchmove', (e) => {
         const currentDistance = getTouchDistance(e.touches);
         if (lastTouchDistance !== null) {
             const distanceDelta = lastTouchDistance - currentDistance;
-            // Smoother zoom functionality for pinch gesture
-            const zoomFactor = distanceDelta * 0.03;
+            // Simple zoom functionality for pinch gesture
+            const zoomFactor = distanceDelta * 0.02;
             const direction = new THREE.Vector3();
             camera.getWorldDirection(direction);
             camera.position.addScaledVector(direction, zoomFactor);
@@ -941,32 +932,24 @@ container.addEventListener('touchmove', (e) => {
     if (e.touches.length === 1) {
         e.preventDefault();
         const touch = e.touches[0];
-        const deltaX = touch.clientX - lastTouchX;
-        const deltaY = touch.clientY - lastTouchY;
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
         
-        // Calculate velocity for momentum
-        const currentTime = Date.now();
-        const deltaTime = currentTime - lastTouchTime;
-        if (deltaTime > 0) {
-            touchVelocityX = deltaX / deltaTime;
-            touchVelocityY = deltaY / deltaTime;
-        }
-        
-        // Apply smoother rotation with lower threshold
-        const rotationSpeed = 0.003;
+        // Direct, predictable rotation - 1:1 finger movement
+        const rotationSpeed = 0.005;
         cameraRotation.y -= deltaX * rotationSpeed;
         cameraRotation.x -= deltaY * rotationSpeed;
         
         // Clamp vertical rotation to prevent flipping
-        cameraRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.x));
+        cameraRotation.x = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, cameraRotation.x));
 
         const quaternion = new THREE.Quaternion();
         quaternion.setFromEuler(new THREE.Euler(cameraRotation.x, cameraRotation.y, 0, 'YXZ'));
         camera.quaternion.copy(quaternion);
 
-        lastTouchX = touch.clientX;
-        lastTouchY = touch.clientY;
-        lastTouchTime = currentTime;
+        // Update start position for continuous movement
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
     }
 }, { passive: false });
 
@@ -975,32 +958,6 @@ container.addEventListener('touchend', (e) => {
     
     if (e.touches.length < 2) {
         lastTouchDistance = null;
-    }
-
-    // Apply momentum for smooth deceleration
-    if (e.changedTouches.length === 1 && e.touches.length === 0) {
-        const momentumDecay = 0.95;
-        const momentumSteps = 20;
-        let step = 0;
-        
-        const applyMomentum = () => {
-            if (step < momentumSteps) {
-                cameraRotation.y -= touchVelocityX * momentumDecay * step;
-                cameraRotation.x -= touchVelocityY * momentumDecay * step;
-                
-                // Clamp vertical rotation
-                cameraRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.x));
-
-                const quaternion = new THREE.Quaternion();
-                quaternion.setFromEuler(new THREE.Euler(cameraRotation.x, cameraRotation.y, 0, 'YXZ'));
-                camera.quaternion.copy(quaternion);
-                
-                step++;
-                requestAnimationFrame(applyMomentum);
-            }
-        };
-        
-        applyMomentum();
     }
 
     isTouching = false;
