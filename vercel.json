@@ -1,8 +1,10 @@
 {
+  "version": 2,
+  "public": true,
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/$1"
+      "destination": "/index.html"
     }
   ]
 }
